@@ -26,8 +26,6 @@ if __name__ == '__main__':
     train_df = dataset_df[:train_len]
     test_df = dataset_df[train_len:]
     
-    # train_seqff = None  # type: pd.DataFrame
-    # test_seqff = None  # type: pd.DataFrame
     # if args.seqff is not None:
     train_seqff = train_df.pop(args.seqff_col)
     test_seqff = test_df.pop(args.seqff_col)

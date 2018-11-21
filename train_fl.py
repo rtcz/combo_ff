@@ -26,13 +26,12 @@ if __name__ == '__main__':
     parser.add_argument('test', type=is_file, help='testing dataset')
     parser.add_argument('-o', '--out_model', type=str, help='trained model', required=True)
     parser.add_argument('-c', '--out_coeffs', type=str, help='trained model coefficients')
-    parser.add_argument('-f', '--ranking', type=is_file, help='feature rankings')
+    parser.add_argument('-f', '--ranking', type=is_file, help='feature ranking')
     parser.add_argument('-v', '--verbose', action='store_true', help='control verbosity')
     args = parser.parse_args()
     
     train_df = pd.read_table(args.train, index_col=INDEX_COL)  # type: pd.DataFrame
     test_df = pd.read_table(args.test, index_col=INDEX_COL)  # type: pd.DataFrame
-    # test_df = test_df.loc[11183, :].to_frame().transpose()
     
     train_x, train_y = train_df, train_df.pop(TARGET_COL)
     test_x, test_y = test_df, test_df.pop(TARGET_COL)
