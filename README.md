@@ -20,39 +20,6 @@ When SeqFF column label is provided it separates this column into dedicated trai
 Fragment length profiles of samples are scaled to sum of one and all of fragment length features are normalized to have zero mean and unit variance.
 
 ```
-python3 predict.py -h
-usage: Combo FF [-h] -m MEAN -s STD [-c COMBO] [-f RANKING] [-v] sample fl
-
-Predicts FF of single sample.
-
-positional arguments:
-  sample                fetal lengths sample with SeqFF feature as last value
-  fl                    trained FL model
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -m MEAN, --mean MEAN  mean of each FL training dataset feature
-  -s STD, --std STD     standard deviation of each FL trainig dataset feature
-  -c COMBO, --combo COMBO
-                        make prediction by COMBO model
-  -f RANKING, --ranking RANKING
-                        feature rankings
-  -v, --verbose         control verbosity
-```
-
-```
-python3 preprocess.py \
-	data/dataset.tsv \
-	-r 0.8 \
-	-s 0
-```
-
-## Recursive feature elimination with cross validation
-Optional method for ranking fragment length features.
-Features with rank one contributing to the improvement of the trained model.
-Output file contains ranking of all the features and ca be used in following scripts for their exclusion.
-
-```
 python3 preprocess.py -h
 usage: Combo FF [-h] [-s SEED] -r RATIO [-t TARGET_COL] [-i INDEX_COL]
                 [-q SEQFF_COL] [-v]
@@ -93,14 +60,16 @@ optional arguments:
 ```
 
 ```
-python3 eliminate.py \
-	data/train_dataset.tsv \
-	data/ranking
+python3 preprocess.py \
+	data/dataset.tsv \
+	-r 0.8 \
+	-s 0
 ```
 
-## Training FL model
-Trains preprocessed training set with support vector machine algorithm.
-After the model is trained it is tested on testing set.
+## Recursive feature elimination with cross validation
+Optional method for ranking fragment length features.
+Features with rank one contributing to the improvement of the trained model.
+Output file contains ranking of all the features and ca be used in following scripts for their exclusion.
 
 ```
 python3 eliminate.py -h
@@ -142,6 +111,40 @@ optional arguments:
   -f RANKING, --ranking RANKING
                         feature ranking
   -v, --verbose         controls verbosity
+```
+
+```
+python3 eliminate.py \
+	data/train_dataset.tsv \
+	data/ranking
+```
+
+## Training FL model
+Trains preprocessed training set with support vector machine algorithm.
+After the model is trained it is tested on testing set.
+
+```
+python3 train_fl.py -h
+usage: Combo FF [-h] -o OUT_MODEL [-c OUT_COEFFS] [-f RANKING] [-v] train test
+
+Trains FL (fetal length) model.
+
+positional arguments:
+  train                 TSV file with preprocessed training fragment length
+                        profiles
+  test                  TSV file with preprocessed testing fragment length
+                        profiles
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -o OUT_MODEL, --out_model OUT_MODEL
+                        trained FL model
+  -c OUT_COEFFS, --out_coeffs OUT_COEFFS
+                        trained FL model coefficients
+  -f RANKING, --ranking RANKING
+                        feature ranking
+  -v, --verbose         controls verbosity
+
 ```
 
 ```
