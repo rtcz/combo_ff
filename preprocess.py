@@ -8,14 +8,15 @@ from sklearn.utils import shuffle
 from common import PROG_TITLE, is_file, is_ratio, TARGET_COL, INDEX_COL, SEQFF_COL
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(prog=PROG_TITLE, description='Dataset preprocessing.')
-    parser.add_argument('dataset', type=is_file, help='dataset to preprocess')
-    parser.add_argument('-s', '--seed', type=int, help='random state')
-    parser.add_argument('-r', '--ratio', type=is_ratio, default='id', required=True, help='index column label')
+    desc = 'Dataset shuffling, preprocessing and spliting into trainig and testing set.'
+    parser = argparse.ArgumentParser(prog=PROG_TITLE, description=desc)
+    parser.add_argument('dataset', type=is_file, help='TSV file with fragment length profiles to preprocess')
+    parser.add_argument('-s', '--seed', type=int, help='random state as integer')
+    parser.add_argument('-r', '--ratio', type=is_ratio, default='id', required=True, help='ratio of training dataset')
     parser.add_argument('-t', '--target_col', type=str, default=TARGET_COL, help='target column label')
     parser.add_argument('-i', '--index_col', type=str, default=INDEX_COL, help='index column label')
     parser.add_argument('-q', '--seqff_col', type=str, default=SEQFF_COL, help='SeqFF prediction column label')
-    parser.add_argument('-v', '--verbose', action='store_true', help='control verbosity')
+    parser.add_argument('-v', '--verbose', action='store_true', help='controls verbosity')
     args = parser.parse_args()
     
     dataset_df = pd.read_table(args.dataset, index_col=args.index_col)  # type: pd.DataFrame
@@ -26,9 +27,11 @@ if __name__ == '__main__':
     train_df = dataset_df[:train_len]
     test_df = dataset_df[train_len:]
     
-    # if args.seqff is not None:
-    train_seqff = train_df.pop(args.seqff_col)
-    test_seqff = test_df.pop(args.seqff_col)
+    train_seqff = None
+    test_seqff = None
+    if args.seqff in dataset_df:
+        train_seqff = train_df.pop(args.seqff_col)
+        test_seqff = test_df.pop(args.seqff_col)
     
     train_target = train_df.pop(args.target_col)
     test_target = test_df.pop(args.target_col)
@@ -64,9 +67,9 @@ if __name__ == '__main__':
     np.savetxt(dirname + '/train_' + filename + '_std', std_series.values, delimiter='\n')
     
     # save training and testing SeqFF feature for Combo method
-    # if train_seqff is not None and test_seqff is not None:
-    train_seqff.to_csv(dirname + '/train_seqff_' + basename, sep='\t', index_label=INDEX_COL, header=[SEQFF_COL])
-    test_seqff.to_csv(dirname + '/test_seqff_' + basename, sep='\t', index_label=INDEX_COL, header=[SEQFF_COL])
+    if args.seqff in dataset_df:
+        train_seqff.to_csv(dirname + '/train_seqff_' + basename, sep='\t', index_label=INDEX_COL, header=[SEQFF_COL])
+        test_seqff.to_csv(dirname + '/test_seqff_' + basename, sep='\t', index_label=INDEX_COL, header=[SEQFF_COL])
     
     # save training and testing dataset for FL method
     train_df.to_csv(dirname + '/train_' + basename, sep='\t', index_label=INDEX_COL, header=True)

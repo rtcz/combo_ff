@@ -21,13 +21,13 @@ def is_train_ratio(value: str) -> float:
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(prog=PROG_TITLE, description='Trains FL model.')
-    parser.add_argument('train', type=is_file, help='training dataset')
-    parser.add_argument('test', type=is_file, help='testing dataset')
-    parser.add_argument('-o', '--out_model', type=str, help='trained model', required=True)
-    parser.add_argument('-c', '--out_coeffs', type=str, help='trained model coefficients')
+    parser = argparse.ArgumentParser(prog=PROG_TITLE, description='Trains FL (fetal length) model.')
+    parser.add_argument('train', type=is_file, help='TSV file with preprocessed training fragment length profiles')
+    parser.add_argument('test', type=is_file, help='TSV file with preprocessed testing fragment length profiles')
+    parser.add_argument('-o', '--out_model', type=str, help='trained FL model', required=True)
+    parser.add_argument('-c', '--out_coeffs', type=str, help='trained FL model coefficients')
     parser.add_argument('-f', '--ranking', type=is_file, help='feature ranking')
-    parser.add_argument('-v', '--verbose', action='store_true', help='control verbosity')
+    parser.add_argument('-v', '--verbose', action='store_true', help='controls verbosity')
     args = parser.parse_args()
     
     train_df = pd.read_table(args.train, index_col=INDEX_COL)  # type: pd.DataFrame

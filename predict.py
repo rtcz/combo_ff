@@ -8,15 +8,17 @@ from sklearn.linear_model import LinearRegression
 from common import PROG_TITLE, is_file, first_rank_ids
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(prog=PROG_TITLE, description='Predicts FF of single sample.')
-    parser.add_argument('sample', type=is_file, help='fetal lengths sample with SeqFF feature as last value')
+    desc = 'Predicts FF of single sample from FL model or combined model.'
+    parser = argparse.ArgumentParser(prog=PROG_TITLE, description=desc)
+    parser.add_argument('sample', type=is_file, help='fragment lengths sample with SeqFF feature as the last value')
     parser.add_argument('fl', type=is_file, help='trained FL model')
-    parser.add_argument('-m', '--mean', type=is_file, required=True, help='mean of each FL training dataset feature')
-    parser.add_argument('-s', '--std', type=is_file, required=True,
-                        help='standard deviation of each FL trainig dataset feature')
-    parser.add_argument('-c', '--combo', type=is_file, help='make prediction by COMBO model')
-    parser.add_argument('-f', '--ranking', type=is_file, help='feature rankings')
-    parser.add_argument('-v', '--verbose', action='store_true', help='control verbosity')
+    desc = 'list of means of each FL training dataset feature'
+    parser.add_argument('-m', '--mean', type=is_file, required=True, help=desc)
+    desc = 'list of standard deviations of each FL trainig dataset feature'
+    parser.add_argument('-s', '--std', type=is_file, required=True, help=desc)
+    parser.add_argument('-c', '--combo', type=is_file, help='makes prediction by combined model using SeqFF feature')
+    parser.add_argument('-f', '--ranking', type=is_file, help='feature ranking')
+    parser.add_argument('-v', '--verbose', action='store_true', help='controls verbosity')
     args = parser.parse_args()
     
     sample = np.loadtxt(args.sample)
@@ -51,8 +53,7 @@ if __name__ == '__main__':
         
         if args.verbose:
             print('COMBO prediction %.4f' % combo_prediction)
-            
+        
         print(combo_prediction[0])
     else:
         print(fl_prediction[0])
-
