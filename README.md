@@ -20,29 +20,7 @@ When SeqFF column label is provided it separates this column into dedicated trai
 Fragment length profiles of samples are scaled to sum of one and all of fragment length features are normalized to have zero mean and unit variance.
 
 ```
-python3 preprocess.py -h
-usage: Combo FF [-h] [-s SEED] -r RATIO [-t TARGET_COL] [-i INDEX_COL]
-                [-q SEQFF_COL] [-v]
-                dataset
-
-Dataset shuffling, preprocessing and spliting into trainig and testing set.
-
-positional arguments:
-  dataset               TSV file with fragment length profiles to preprocess
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -s SEED, --seed SEED  random state as integer
-  -r RATIO, --ratio RATIO
-                        ratio of training dataset
-  -t TARGET_COL, --target_col TARGET_COL
-                        target column label
-  -i INDEX_COL, --index_col INDEX_COL
-                        index column label
-  -q SEQFF_COL, --seqff_col SEQFF_COL
-                        SeqFF prediction column label
-  -v, --verbose         controls verbosity
-hekel@gen-main:/data/projects/nipt-heart/ff/utility$ python3 eliminate.py -h
+python3 eliminate.py -h
 usage: Combo FF [-h] [-c CV] [-j JOBS] [-v] dataset out_rankings
 
 Recursive feature elimination with cross validation.
@@ -86,30 +64,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -c CV, --cv CV        number of cross validations
   -j JOBS, --jobs JOBS  number of cores to use in parallel
-  -v, --verbose         controls verbosity
-hekel@gen-main:/data/projects/nipt-heart/ff/utility$ ^C
-hekel@gen-main:/data/projects/nipt-heart/ff/utility$ python3 train_fl.py 
-usage: Combo FF [-h] -o OUT_MODEL [-c OUT_COEFFS] [-f RANKING] [-v] train test
-Combo FF: error: the following arguments are required: train, test, -o/--out_model
-hekel@gen-main:/data/projects/nipt-heart/ff/utility$ python3 train_fl.py -h
-usage: Combo FF [-h] -o OUT_MODEL [-c OUT_COEFFS] [-f RANKING] [-v] train test
-
-Trains FL (fetal length) model.
-
-positional arguments:
-  train                 TSV file with preprocessed training fragment length
-                        profiles
-  test                  TSV file with preprocessed testing fragment length
-                        profiles
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -o OUT_MODEL, --out_model OUT_MODEL
-                        trained FL model
-  -c OUT_COEFFS, --out_coeffs OUT_COEFFS
-                        trained FL model coefficients
-  -f RANKING, --ranking RANKING
-                        feature ranking
   -v, --verbose         controls verbosity
 ```
 
