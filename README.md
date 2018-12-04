@@ -154,34 +154,35 @@ python3 train_combo.py \
 ```
 
 ## Fetal fraction estimation
-Fetal fraction of new sample can be estimated with trained FL model or the better performing combined model depending on the use of associated parameter.
+Fetal fraction of new sample can be estimated with trained FL model or the better performing combined model depending on the use of related model.
 
 ```
 python3 predict.py -h
-usage: Combo FF [-h] -m MEAN -s STD [-c COMBO] [-f RANKING] [-v] sample fl
+usage: Combo FF [-h] -m MEAN -s STD [-c COMBO_MODEL] [-f RANKING] [-v]
+                sample fl_model
 
 Predicts FF of single sample from FL model or combined model.
 
 positional arguments:
-  sample                fragment lengths sample with SeqFF feature as the last
-                        value
-  fl                    trained FL model
+  sample                sample profile of fragment legths; if using combo
+                        model the last value is SeqFF prediction
+  fl_model              trained FL model
 
 optional arguments:
   -h, --help            show this help message and exit
   -m MEAN, --mean MEAN  list of means of each FL training dataset feature
   -s STD, --std STD     list of standard deviations of each FL trainig dataset
                         feature
-  -c COMBO, --combo COMBO
-                        makes prediction by combined model using SeqFF feature
+  -c COMBO_MODEL, --combo_model COMBO_MODEL
+                        trained combo model
   -f RANKING, --ranking RANKING
                         feature ranking
   -v, --verbose         controls verbosity
 ```
-
 ```
 python3 predict.py \
-	sample.tsv fl_model \
+	sample.tsv \
+	fl_model \
 	-c data/combo_model \
 	-m data/train_dataset_mean \
 	-s data/train_dataset_std \
