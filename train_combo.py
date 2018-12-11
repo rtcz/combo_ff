@@ -18,6 +18,7 @@ if __name__ == '__main__':
     parser.add_argument('fl_model', type=is_file, help='trained FL model')
     parser.add_argument('-o', '--out_model', type=str, help='trained combined model', required=True)
     parser.add_argument('-c', '--out_coeffs', type=str, help='trained combined model coefficients')
+    parser.add_argument('-r', '--out_result', type=str, help='trained model testing results')
     parser.add_argument('-f', '--ranking', type=is_file, help='feature ranking')
     parser.add_argument('-v', '--verbose', action='store_true', help='control verbosity')
     args = parser.parse_args()
@@ -54,15 +55,24 @@ if __name__ == '__main__':
     if args.verbose:
         print('testing on %d samples' % len(test_x))
     
-    train_z = model.predict(train_x)
     test_z = model.predict(test_x)
+    pearson = pearsonr(test_y, test_z)
     
-    print('train pearsonr %s' % str(pearsonr(train_y, train_z)))
-    print('test pearsonr %s' % str(pearsonr(test_y, test_z)))
+    mae = np.mean(np.abs(test_y - test_z))
+    mse = np.mean((test_y - test_z) ** 2)
+    
+    if args.verbose:
+        print('test pearsonr %f' % pearson[0])
+        print('test mae %f' % mae)
+        print('test mse %f' % mse)
     
     # save model parameters
     if args.out_coeffs is not None:
         np.savetxt(args.out_coeffs, model.coef_, delimiter='\n')
+    
+    if args.out_result is not None:
+        with open(args.out_result, 'w') as result_file:
+            result_file.write('%f\t%f\t%f\n' % (pearson[0], mae, mse))
     
     # save model
     joblib.dump(model, args.out_model)

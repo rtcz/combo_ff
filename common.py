@@ -39,18 +39,6 @@ def is_file(value: str) -> str:
         raise argparse.ArgumentTypeError("Value %s is not a file." % value)
 
 
-def is_ratio(value: str) -> float:
-    try:
-        value = float(value)
-    except ValueError:
-        raise argparse.ArgumentTypeError("Value %s is not a float." % value)
-    
-    if value <= 0 or value >= 1:
-        raise argparse.ArgumentTypeError("Ratio must be between 0 and 1.")
-    
-    return value
-
-
 def first_rank_ids(ranking_list) -> list:
     ids = []
     for i in range(len(ranking_list)):
