@@ -62,7 +62,7 @@ if __name__ == '__main__':
     
     # save model parameters
     if args.out_coeffs is not None:
-        np.savetxt(args.out_coeffs, model.coef_[0], delimiter='\n')
+        np.savetxt(args.out_coeffs, model.coef_, delimiter='\n')
     
     # save model
     joblib.dump(model, args.out_model)
