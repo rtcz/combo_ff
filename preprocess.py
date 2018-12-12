@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import KFold
 
-from common import PROG_TITLE, is_file, TARGET_COL, INDEX_COL, SEQFF_COL
+from common import PROG_TITLE, is_file, is_dir, TARGET_COL, INDEX_COL, SEQFF_COL
 
 if __name__ == '__main__':
     desc = 'Dataset shuffling, preprocessing and spliting into training and testing folds intended for .'
@@ -14,6 +14,7 @@ if __name__ == '__main__':
     parser.add_argument('-k', '--kfold', type=int, default=5, help=desc)
     desc = 'random state to shuffle the dataset, dataset is not shuffled when omitted'
     parser.add_argument('-s', '--seed', type=int, help=desc)
+    parser.add_argument('-o', '--out', type=is_dir, help='output directory')
     desc = 'number of training and testing folds to create'
     parser.add_argument('-t', '--target_col', type=str, default=TARGET_COL, help='target column label')
     parser.add_argument('-i', '--index_col', type=str, default=INDEX_COL, help='index column label')
@@ -84,8 +85,11 @@ if __name__ == '__main__':
         train_df[TARGET_COL] = train_target
         test_df[TARGET_COL] = test_target
         
-        dirname, basename = args.dataset.rsplit('/', maxsplit=1)
+        dirname, basename = os.path.split(args.dataset)
         filename, extension = os.path.splitext(basename)
+        
+        if args.out is not None:
+            dirname = args.out
         
         # save training mean and std of each fetal length feature
         np.savetxt(

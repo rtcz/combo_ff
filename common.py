@@ -39,6 +39,13 @@ def is_file(value: str) -> str:
         raise argparse.ArgumentTypeError("Value %s is not a file." % value)
 
 
+def is_dir(value: str) -> str:
+    if os.path.isdir(value):
+        return value
+    else:
+        raise argparse.ArgumentTypeError("Value %s is not a directory." % value)
+
+
 def first_rank_ids(ranking_list) -> list:
     ids = []
     for i in range(len(ranking_list)):
