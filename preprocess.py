@@ -8,18 +8,19 @@ from sklearn.model_selection import KFold
 from common import PROG_TITLE, is_file, is_dir, TARGET_COL, INDEX_COL, SEQFF_COL
 
 if __name__ == '__main__':
-    desc = 'Dataset shuffling, preprocessing and spliting into training and testing folds intended for .'
+    desc = 'Dataset shuffling, preprocessing and spliting into training and testing folds.'
     parser = argparse.ArgumentParser(prog=PROG_TITLE, description=desc)
     parser.add_argument('dataset', type=is_file, help='TSV file with fragment length profiles to preprocess')
+    desc = 'number of training and testing folds to create'
     parser.add_argument('-k', '--kfold', type=int, default=5, help=desc)
     desc = 'random state to shuffle the dataset, dataset is not shuffled when omitted'
     parser.add_argument('-s', '--seed', type=int, help=desc)
     parser.add_argument('-o', '--out', type=is_dir, help='output directory')
-    desc = 'number of training and testing folds to create'
     parser.add_argument('-t', '--target_col', type=str, default=TARGET_COL, help='target column label')
     parser.add_argument('-i', '--index_col', type=str, default=INDEX_COL, help='index column label')
     parser.add_argument('-q', '--seqff_col', type=str, default=SEQFF_COL, help='SeqFF prediction column label')
-    parser.add_argument('-a', '--range', type=str, help='index range of fetal length features to use, e.g. "50:220"')
+    desc = 'index range of fetal lengths to use, e.g. "50:220"'
+    parser.add_argument('-a', '--range', type=str, help=desc)
     parser.add_argument('-v', '--verbose', action='store_true', help='controls verbosity')
     args = parser.parse_args()
     
@@ -93,11 +94,11 @@ if __name__ == '__main__':
         
         # save training mean and std of each fetal length feature
         np.savetxt(
-            '%s/train_%s_mean_%d' % (dirname, filename, counter),
+            '%s/train_%s_mean_%d.txt' % (dirname, filename, counter),
             mean_series.values, delimiter='\n'
         )
         np.savetxt(
-            '%s/train_%s_std_%d' % (dirname, filename, counter),
+            '%s/train_%s_std_%d.txt' % (dirname, filename, counter),
             std_series.values, delimiter='\n'
         )
         

@@ -10,7 +10,8 @@ from common import PROG_TITLE, is_file, first_rank_ids
 if __name__ == '__main__':
     desc = 'Predicts FF of single sample from FL model or combined model.'
     parser = argparse.ArgumentParser(prog=PROG_TITLE, description=desc)
-    desc = 'sample profile of fragment legths; if using combo model the last value is SeqFF prediction'
+    desc = 'fragment length profile of a sample as tab separated values; '
+    desc += 'if using combo model the last value must be a SeqFF prediction'
     parser.add_argument('sample', type=is_file, help=desc)
     parser.add_argument('fl_model', type=is_file, help='trained FL model')
     desc = 'list of means of each FL training dataset feature'
@@ -58,7 +59,5 @@ if __name__ == '__main__':
         
         if args.verbose:
             print('COMBO prediction %.4f' % combo_prediction)
-        
-        print(combo_prediction[0])
     else:
         print(fl_prediction[0])
