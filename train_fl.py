@@ -5,10 +5,10 @@ import pandas as pd
 from scipy.stats import pearsonr
 from sklearn.externals import joblib
 
-from common import is_file, PROG_TITLE, create_svm, INDEX_COL, TARGET_COL
+from common import is_file, create_svm, INDEX_COL, TARGET_COL
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(prog=PROG_TITLE, description='Trains FL (fetal length) model.')
+    parser = argparse.ArgumentParser(description='Trains FL (fetal length) model.')
     parser.add_argument('train', type=is_file, help='TSV file with preprocessed training fragment length profiles')
     parser.add_argument('test', type=is_file, help='TSV file with preprocessed testing fragment length profiles')
     parser.add_argument('-o', '--out_model', type=str, help='trained FL model', required=True)

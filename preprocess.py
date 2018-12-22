@@ -5,11 +5,11 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import KFold
 
-from common import PROG_TITLE, is_file, is_dir, TARGET_COL, INDEX_COL, SEQFF_COL
+from common import is_file, is_dir, TARGET_COL, INDEX_COL, SEQFF_COL
 
 if __name__ == '__main__':
     desc = 'Dataset shuffling, preprocessing and spliting into training and testing folds.'
-    parser = argparse.ArgumentParser(prog=PROG_TITLE, description=desc)
+    parser = argparse.ArgumentParser(description=desc)
     parser.add_argument('dataset', type=is_file, help='TSV file with fragment length profiles to preprocess')
     desc = 'number of training and testing folds to create'
     parser.add_argument('-k', '--kfold', type=int, default=5, help=desc)

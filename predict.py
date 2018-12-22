@@ -5,11 +5,11 @@ from sklearn import svm
 from sklearn.externals import joblib
 from sklearn.linear_model import LinearRegression
 
-from common import PROG_TITLE, is_file
+from common import is_file
 
 if __name__ == '__main__':
     desc = 'Predicts FF of single sample from FL model or combined model.'
-    parser = argparse.ArgumentParser(prog=PROG_TITLE, description=desc)
+    parser = argparse.ArgumentParser(description=desc)
     desc = 'fragment length profile of a sample as tab separated values; '
     desc += 'if using combo model the last value must be a SeqFF prediction'
     parser.add_argument('sample', type=is_file, help=desc)
@@ -19,7 +19,6 @@ if __name__ == '__main__':
     desc = 'list of standard deviations of each FL trainig dataset feature'
     parser.add_argument('-s', '--std', type=is_file, required=True, help=desc)
     parser.add_argument('-c', '--combo_model', type=is_file, help='trained combo model')
-    parser.add_argument('-f', '--ranking', type=is_file, help='feature ranking')
     parser.add_argument('-v', '--verbose', action='store_true', help='controls verbosity')
     args = parser.parse_args()
     

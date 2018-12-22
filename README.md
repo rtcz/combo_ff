@@ -1,85 +1,60 @@
 # Combo FF - combined method for fetal fraction estimation
-Combo FF is a tool for estimation of fetal fraction using genomic data obtained from mothernal blood. The tool combines two estimation models: improved FL (Fragment Length) model and SeqFF model based on relative reads counts.
+Combo FF is a tool for estimation of fetal fraction using genomic data obtained from mothernal blood. The tool combines two estimation methods: FL (Fragment Length) method and SeqFF method based on relative reads counts.
+FL model is trained with support vector machine regressor on fragment length profiles.
 Combined model is trained on fetal fraction estimations of both models using ordinary least squares linear regression.
-FL model is trained on fragment length profiles whereas estimation of fetal fraction from SeqFF model must be directly provided.
-
-Support vector machine is used to train the FL model on fragment length profiles. It is recommended to use numbers of fragment lengths from 50 to 220 since this range contains almost all of the variability. In general, machine learning methods perform better with lower number of features. This number can be further reduced by using provided method for recursive feature elimination with cross validation.
+To train the combined model, user must provide fetal fractions estimations from the SeqFF model.
+For general usage it is recommended to use fragment length profile from the length of 50 to 220 since this range captures almost all of the variability between the profiles.
 
 Dataset and single sample is provided for demonstration.
-The dataset `data/dataset.tsv` has 170 features with fragment length from 50 to 220 for training the FL model.
+The dataset `example/dataset.tsv` has 170 features with fragment length from 50 to 220 for training the FL model.
 Another feature is SeqFF fetal fraction estimation for training the combined model.
 SeqFF estimation was computed with pre-trained parameters from the original study.
 Prediction target is a fetal fraction computed by a reliable Y-based method.
-Single sample `data/sample.tsv` is intended for prediction on the trained model.
-It is in the same format as a sample from the dataset.
+Single sample `example/sample.tsv` is an independent sample intended for prediction from the trained model.
+The bash script `example/run.sh` cotanins complete usage of the tool from data preprocessing to fetal fraction prediction from single sample.
 
 
 ## Preprocessing
-Script shuffles and splits the dataset into training and testing set.
-When SeqFF column label is provided it separates this column into dedicated training and testing set.
-Fragment length profiles of samples are scaled to sum of one and all of fragment length features are normalized to have zero mean and unit variance.
+Script shuffles and splits the dataset into number of training and testing folds intended for k-fold cross validation.
+When SeqFF column label is provided, the column is separated from the original dataset and saved in dedicated training and testing datasets.
+For each fold fragment length profiles of samples are scaled to sum of one and all of the fragment length features are normalized to have zero mean and unit variance with respect to the training dataset.
 
 ```
-python3 eliminate.py -h
-usage: Combo FF [-h] [-c CV] [-j JOBS] [-v] dataset out_rankings
+usage: preprocess.py [-h] [-k KFOLD] [-s SEED] [-o OUT] [-t TARGET_COL]
+                     [-i INDEX_COL] [-q SEQFF_COL] [-a RANGE] [-v]
+                     dataset
 
-Recursive feature elimination with cross validation.
+Dataset shuffling, preprocessing and spliting into training and testing folds.
 
 positional arguments:
-  dataset               TSV file with preprocessed training fragment length
-                        profiles
-  out_rankings          feature ranking
+  dataset               TSV file with fragment length profiles to preprocess
 
 optional arguments:
   -h, --help            show this help message and exit
-  -c CV, --cv CV        number of cross validations
-  -j JOBS, --jobs JOBS  number of cores to use in parallel
+  -k KFOLD, --kfold KFOLD
+                        number of training and testing folds to create
+  -s SEED, --seed SEED  random state to shuffle the dataset, dataset is not
+                        shuffled when omitted
+  -o OUT, --out OUT     output directory
+  -t TARGET_COL, --target_col TARGET_COL
+                        target column label
+  -i INDEX_COL, --index_col INDEX_COL
+                        index column label
+  -q SEQFF_COL, --seqff_col SEQFF_COL
+                        SeqFF prediction column label
+  -a RANGE, --range RANGE
+                        index range of fetal lengths to use, e.g. "50:220"
   -v, --verbose         controls verbosity
 ```
 
-```
-python3 preprocess.py \
-	data/dataset.tsv \
-	-r 0.8 \
-	-s 0
-```
-
-## Recursive feature elimination with cross validation
-Optional method for ranking fragment length features.
-Features with rank one contributing to the improvement of the trained model.
-Output file contains ranking of all the features and ca be used in following scripts for their exclusion.
-
-```
-python3 eliminate.py -h
-usage: Combo FF [-h] [-c CV] [-j JOBS] [-v] dataset out_rankings
-
-Recursive feature elimination with cross validation.
-
-positional arguments:
-  dataset               TSV file with preprocessed training fragment length
-                        profiles
-  out_rankings          feature ranking
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -c CV, --cv CV        number of cross validations
-  -j JOBS, --jobs JOBS  number of cores to use in parallel
-  -v, --verbose         controls verbosity
-```
-
-```
-python3 eliminate.py \
-	data/train_dataset.tsv \
-	data/ranking
-```
 
 ## Training FL model
-Trains preprocessed training set with support vector machine algorithm.
-After the model is trained it is tested on testing set.
+Trains FL model with support vector machine regressor on preprocessed training set.
+After the model is trained it is tested on the testing set.
 
 ```
-python3 train_fl.py -h
-usage: Combo FF [-h] -o OUT_MODEL [-c OUT_COEFFS] [-f RANKING] [-v] train test
+usage: train_fl.py [-h] -o OUT_MODEL [-c OUT_COEFFS] [-r OUT_RESULT] [-v]
+                   train test
 
 Trains FL (fetal length) model.
 
@@ -95,29 +70,19 @@ optional arguments:
                         trained FL model
   -c OUT_COEFFS, --out_coeffs OUT_COEFFS
                         trained FL model coefficients
-  -f RANKING, --ranking RANKING
-                        feature ranking
+  -r OUT_RESULT, --out_result OUT_RESULT
+                        trained model testing results
   -v, --verbose         controls verbosity
-
-```
-
-```
-python3 train_fl.py \
-	data/train_dataset.tsv \
-	data/test_dataset.tsv \
-	-o data/fl_model \
-	-c data/fl_model_coeffs \
-	-f data/ranking
 ```
 
 ## Training combined model
-Combined model is trained with estimation of fetal fractions on the training dataset given by FL model together with provided estimation of SeqFF model.
-The testing is done correspondingly.
+Combined model is trained on estimations of fetal fractions from FL model together with provided estimations from SeqFF model.
+After the model is trained it is tested on the testing set.
 
 ```
-python3 train_combo.py -h
-usage: Combo FF [-h] -o OUT_MODEL [-c OUT_COEFFS] [-f RANKING] [-v]
-                train test train_seqff test_seqff fl_model
+combo.py -h
+usage: train_combo.py [-h] -o OUT_MODEL [-c OUT_COEFFS] [-r OUT_RESULT] [-v]
+                      train test train_seqff test_seqff fl_model
 
 Trains combined model.
 
@@ -137,35 +102,24 @@ optional arguments:
                         trained combined model
   -c OUT_COEFFS, --out_coeffs OUT_COEFFS
                         trained combined model coefficients
-  -f RANKING, --ranking RANKING
-                        feature ranking
+  -r OUT_RESULT, --out_result OUT_RESULT
+                        trained model testing results
   -v, --verbose         control verbosity
 ```
 
-```
-python3 train_combo.py \
-	data/train_dataset.tsv \
-	data/test_dataset.tsv \
-	data/train_seqff_dataset.tsv \
-	data/test_seqff_dataset.tsv  \
-	data/fl_model \
-	-o data/combo_model
-	-f data/ranking \
-```
-
 ## Fetal fraction estimation
-Fetal fraction of new sample can be estimated with trained FL model or the better performing combined model depending on the use of related model.
+Fetal fraction of a new sample can be estimated with trained FL model or the better performing combined model.
 
 ```
-python3 predict.py -h
-usage: Combo FF [-h] -m MEAN -s STD [-c COMBO_MODEL] [-f RANKING] [-v]
-                sample fl_model
+usage: predict.py [-h] -m MEAN -s STD [-c COMBO_MODEL] [-f RANKING] [-v]
+                  sample fl_model
 
 Predicts FF of single sample from FL model or combined model.
 
 positional arguments:
-  sample                sample profile of fragment legths; if using combo
-                        model the last value is SeqFF prediction
+  sample                fragment length profile of a sample as tab separated
+                        values; if using combo model the last value must be a
+                        SeqFF prediction
   fl_model              trained FL model
 
 optional arguments:
@@ -175,16 +129,5 @@ optional arguments:
                         feature
   -c COMBO_MODEL, --combo_model COMBO_MODEL
                         trained combo model
-  -f RANKING, --ranking RANKING
-                        feature ranking
   -v, --verbose         controls verbosity
-```
-```
-python3 predict.py \
-	sample.tsv \
-	fl_model \
-	-c data/combo_model \
-	-m data/train_dataset_mean \
-	-s data/train_dataset_std \
-	-f data/ranking
 ```

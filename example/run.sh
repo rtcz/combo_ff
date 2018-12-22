@@ -69,5 +69,4 @@ do
 		-m ${out_dir}/data/train_dataset_mean_${i}.txt \
 		-s ${out_dir}/data/train_dataset_std_${i}.txt \
 		-v
-	echo ''
 done

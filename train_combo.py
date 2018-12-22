@@ -7,10 +7,10 @@ from sklearn import svm
 from sklearn.externals import joblib
 from sklearn.linear_model import LinearRegression
 
-from common import is_file, PROG_TITLE, INDEX_COL, TARGET_COL
+from common import is_file, INDEX_COL, TARGET_COL
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(prog=PROG_TITLE, description='Trains combined model.')
+    parser = argparse.ArgumentParser(description='Trains combined model.')
     parser.add_argument('train', type=is_file, help='TSV file with preprocessed training fragment length profiles')
     parser.add_argument('test', type=is_file, help='TSV file with preprocessed testing fragment length profiles')
     parser.add_argument('train_seqff', type=is_file, help='TSV file with training SeqFF feature (SeqFF estimation)')

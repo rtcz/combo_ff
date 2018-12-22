@@ -1,11 +1,8 @@
 import argparse
 import os
 
-import pandas as pd
 from scipy.stats import pearsonr
 from sklearn import svm
-
-PROG_TITLE = 'Combo FF'
 
 INDEX_COL = 'id'
 SEQFF_COL = 'seqff'
@@ -44,4 +41,3 @@ def is_dir(value: str) -> str:
         return value
     else:
         raise argparse.ArgumentTypeError("Value %s is not a directory." % value)
-
