@@ -7,7 +7,7 @@ from sklearn import svm
 from sklearn.externals import joblib
 from sklearn.linear_model import LinearRegression
 
-from common import is_file, PROG_TITLE, first_rank_df, INDEX_COL, TARGET_COL
+from common import is_file, PROG_TITLE, INDEX_COL, TARGET_COL
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog=PROG_TITLE, description='Trains combined model.')
@@ -19,7 +19,6 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--out_model', type=str, help='trained combined model', required=True)
     parser.add_argument('-c', '--out_coeffs', type=str, help='trained combined model coefficients')
     parser.add_argument('-r', '--out_result', type=str, help='trained model testing results')
-    parser.add_argument('-f', '--ranking', type=is_file, help='feature ranking')
     parser.add_argument('-v', '--verbose', action='store_true', help='control verbosity')
     args = parser.parse_args()
     
@@ -31,12 +30,6 @@ if __name__ == '__main__':
     
     fl_train_x, train_y = train_df, train_df.pop(TARGET_COL)
     fl_test_x, test_y = test_df, test_df.pop(TARGET_COL)
-    
-    # keep only first rank features if using recursive feature elimination
-    if args.ranking is not None:
-        ranking_list = np.loadtxt(args.ranking, dtype=int)  # type: np.ndarray
-        fl_train_x = first_rank_df(fl_train_x, ranking_list)
-        fl_test_x = first_rank_df(fl_test_x, ranking_list)
     
     fl_model = joblib.load(args.fl_model)  # type: svm.SVR
     train_fl_feature = fl_model.predict(fl_train_x)

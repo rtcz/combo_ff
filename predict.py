@@ -5,7 +5,7 @@ from sklearn import svm
 from sklearn.externals import joblib
 from sklearn.linear_model import LinearRegression
 
-from common import PROG_TITLE, is_file, first_rank_ids
+from common import PROG_TITLE, is_file
 
 if __name__ == '__main__':
     desc = 'Predicts FF of single sample from FL model or combined model.'
@@ -34,14 +34,6 @@ if __name__ == '__main__':
     mean_list = np.loadtxt(args.mean, dtype=float)  # type: np.ndarray
     std_list = np.loadtxt(args.std, dtype=float)  # type: np.ndarray
     
-    # keep only first rank features if using recursive feature elimination
-    if args.ranking is not None:
-        ranking_list = np.loadtxt(args.ranking, dtype=int)  # type: np.ndarray
-        ids = first_rank_ids(ranking_list)
-        fl_sample = fl_sample[ids]
-        mean_list = mean_list[ids]
-        std_list = std_list[ids]
-    
     # standardize sample
     fl_sample = fl_sample / fl_sample.sum()
     fl_sample = (fl_sample - mean_list) / std_list
@@ -50,14 +42,10 @@ if __name__ == '__main__':
     fl_model = joblib.load(args.fl_model)  # type: svm.SVR
     fl_prediction = fl_model.predict([fl_sample])
     
-    if args.verbose:
-        print('FL prediction %.4f' % fl_prediction)
-    
     if args.combo_model is not None:
         combo_model = joblib.load(args.combo_model)  # type: LinearRegression
         combo_prediction = combo_model.predict([[fl_prediction, seqff_prediction]])
         
-        if args.verbose:
-            print('COMBO prediction %.4f' % combo_prediction)
+        print(combo_prediction[0])
     else:
         print(fl_prediction[0])

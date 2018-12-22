@@ -5,7 +5,7 @@ import pandas as pd
 from scipy.stats import pearsonr
 from sklearn.externals import joblib
 
-from common import is_file, PROG_TITLE, create_svm, first_rank_df, INDEX_COL, TARGET_COL
+from common import is_file, PROG_TITLE, create_svm, INDEX_COL, TARGET_COL
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog=PROG_TITLE, description='Trains FL (fetal length) model.')
@@ -14,7 +14,6 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--out_model', type=str, help='trained FL model', required=True)
     parser.add_argument('-c', '--out_coeffs', type=str, help='trained FL model coefficients')
     parser.add_argument('-r', '--out_result', type=str, help='trained model testing results')
-    parser.add_argument('-f', '--ranking', type=is_file, help='feature ranking')
     parser.add_argument('-v', '--verbose', action='store_true', help='controls verbosity')
     args = parser.parse_args()
     
@@ -23,11 +22,6 @@ if __name__ == '__main__':
     
     train_x, train_y = train_df, train_df.pop(TARGET_COL)
     test_x, test_y = test_df, test_df.pop(TARGET_COL)
-    
-    if args.ranking is not None:
-        ranking_list = np.loadtxt(args.ranking, dtype=int)  # type: np.ndarray
-        train_x = first_rank_df(train_x, ranking_list)
-        test_x = first_rank_df(test_x, ranking_list)
     
     if args.verbose:
         print('training on %d samples and %d features' % (len(train_x), len(train_x.columns)))

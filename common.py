@@ -45,21 +45,3 @@ def is_dir(value: str) -> str:
     else:
         raise argparse.ArgumentTypeError("Value %s is not a directory." % value)
 
-
-def first_rank_ids(ranking_list) -> list:
-    ids = []
-    for i in range(len(ranking_list)):
-        if ranking_list[i] == 1:
-            ids.append(i)
-    
-    return ids
-
-
-def first_rank_df(df: pd.DataFrame, ranking_list) -> pd.DataFrame:
-    """
-    :param df: FL dataframe
-    :param ranking_list: feature rankings by recursive feature elimination
-    :return: FL dataframe without eliminated features
-    """
-    assert len(ranking_list) == len(df.columns)
-    return df.iloc[:, first_rank_ids(ranking_list)]
